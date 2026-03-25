@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto ABP - Conciencia Galáctica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================== BASE Y FONDO DE GALAXIA ================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: radial-gradient(circle at center, #0a0f1f, #000000 80%);
+            color: white;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* ================== ANIMACIONES ================== */
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ================== PANTALLAS ================== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 20px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .active {
+            display: flex;
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: clamp(25px, 6vw, 50px);
+            color: #ff00ff;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        h2 {
+            color: #00ffff;
+            margin: 20px 0;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        p {
+            max-width: 800px;
+            line-height: 1.6;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* ================== BOTONES Y ELEMENTOS ================== */
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 900px;
+        }
+
+        /* Botones de participantes (estéticos) */
+        .btn-tag {
+            padding: 12px 24px;
+            background: rgba(138, 43, 226, 0.2);
+            border: 1px solid #8a2be2;
+            color: #ffffff;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: default;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .btn-tag:hover {
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            background: #8a2be2;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px #8a2be2;
+        }
+
+        button:hover {
+            background: #00ffff;
+            color: black;
+            box-shadow: 0 0 30px #00ffff;
+            transform: scale(1.05);
+        }
+
+        /* Tarjetas de Ayuda */
+        .help-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #00ffff;
+            padding: 20px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: left;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-card strong { color: #ff00ff; font-size: 1.2rem; }
+
+        .collage {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin-bottom: 25px;
+        }
+
+        .collage img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 2px solid #8a2be2;
+        }
+
+        .final-img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 2px solid #ff00ff;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <section id="inicio" class="screen active">
+        <h1>PROYECTO: CONCIENCIA</h1>
+        
+        <h2>Integrantes:</h2>
+        <div class="btn-container">
+            <span class="btn-tag">Iker Elian Castillo Camacho</span>
+            <span class="btn-tag">Abethzayda Juárez Olguin</span>
+            <span class="btn-tag">Sofia Isabella Guzman Paniagua</span>
+        </div>
+
+        <div class="collage">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgZdT7CGyiAai6OkjOK3pMOxgizddxZ83Af2tHYQBbPU9Fy8tYoi9kpmCVlLglTQBUMgU1jC-14DuaCc2Xh8W24b56ZhR8Efn6VePSsEzp90aBKkNlCx0C3ltrcGGBatSRqnCcw7-MrN4cjL28xwI9u7VBBpZX01ZP8qKVJDHJiaHQikx4npgUXcK8_KA/s1080/drogas-jovenes.jpg">
+            <img src="https://www.mexicosocial.org/wp-content/uploads/2022/10/drogas-768x513.jpg">
+            <img src="https://nemdigitalstorage.blob.core.windows.net/nem-main/Si_te_drogas.png">
+            <img src="https://estrategiaenelaula.sep.gob.mx/storage/recursos/2023/04/wFvxT0G1k0-DROGAS.png">
+        </div>
+        
+        <p>Un espacio dedicado a la información, prevención y promoción de un estilo de vida saludable.</p>
+        <button onclick="mostrar('abp')">INGRESAR AL PROYECTO</button>
+    </section>
+
+    <section id="abp" class="screen">
+        <h1>ANÁLISIS ABP</h1>
+        <video width="640" height="360" controls>
+            <source src="proyectoab2 (1) (1) (1).mp4" type="video/mp4">
+        </video>
+        <p>La información es nuestra mejor herramienta para tomar decisiones libres, conscientes y saludables.</p>
+        <button onclick="mostrar('autoayuda')">DIRECTORIO DE APOYO</button>
+    </section>
+
+    <section id="autoayuda" class="screen">
+        <h1>RED DE APOYO</h1>
+        
+        <div class="help-card">
+            <strong>800 911 2000</strong> - Línea de la Vida
+            <p style="text-align: left; margin: 5px 0; font-size: 0.9rem;">Brinda apoyo emocional y asesoría profesional sobre el consumo de sustancias las 24 horas del día. Es un servicio gratuito, confidencial y especializado.</p>
+        </div>
+
+        <div class="help-card">
+            <strong>55 5212 1212</strong> - Centros de Integración Juvenil (CIJ)
+            <p style="text-align: left; margin: 5px 0; font-size: 0.9rem;">Institución dedicada a la prevención, tratamiento y rehabilitación. Ofrecen orientación a jóvenes y familias para enfrentar adicciones.</p>
+        </div>
+
+        <div class="help-card">
+            <strong>911</strong> - Emergencias
+            <p style="text-align: left; margin: 5px 0; font-size: 0.9rem;">Utilízalo en casos de crisis de salud inmediata, sobredosis o situaciones críticas que requieran asistencia médica u hospitalaria urgente.</p>
+        </div>
+
+        <div class="help-card">
+            <strong>SAPTEL: 55 5259 8121</strong>
+            <p style="text-align: left; margin: 5px 0; font-size: 0.9rem;">Servicio de apoyo psicológico telefónico. Ayuda a manejar crisis de ansiedad, depresión o estrés vinculados a situaciones personales difíciles.</p>
+        </div>
+
+        <button onclick="mostrar('final')" style="margin-top: 20px;">MENSAJE DE CIERRE</button>
+    </section>
+
+    <section id="final" class="screen">
+        <h1>TU PODER INTERIOR</h1>
+        <div class="discurso" style="margin-bottom: 20px;">
+            <p style="text-align:justify;">
+                Decir NO es proteger tu libertad. Las adicciones son un camino que limita tu potencial y nubla tus metas. Al elegir una vida saludable, mantienes el control de tu destino, proteges tu salud mental y fortaleces los lazos con quienes más te importan. 
+                <strong>¡El capitán de tu futuro eres tú!</strong>
+            </p>
+        </div>
+        <img src="image_8db28d.png" class="final-img">
+        <br>
+        <button onclick="mostrar('inicio')">REINICIAR</button>
+    </section>
+
+    <script>
+        /* LÓGICA DE PARTÍCULAS */
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        /* NAVEGACIÓN */
+        function mostrar(id) {
+            document.querySelectorAll(".screen").forEach(s => { s.classList.remove("active"); s.style.display = "none"; });
+            const target = document.getElementById(id);
+            target.style.display = "flex";
+            setTimeout(() => target.classList.add("active"), 50);
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
